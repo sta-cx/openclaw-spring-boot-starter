@@ -121,16 +121,6 @@ public class OpenClawClient {
     }
 
     /**
-     * 获取 Gateway 状态
-     */
-    public Mono<Map> getStatus() {
-        return webClient.get()
-                .uri("/api/status")
-                .retrieve()
-                .bodyToMono(Map.class);
-    }
-
-    /**
      * 获取原始 WebClient（用于自定义请求）
      */
     public WebClient getWebClient() {
