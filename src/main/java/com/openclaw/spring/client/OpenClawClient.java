@@ -98,6 +98,39 @@ public class OpenClawClient {
     }
 
     /**
+     * 列出活跃会话
+     */
+    public Mono<List> listSessions(int limit) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/sessions")
+                        .queryParam("limit", limit)
+                        .build())
+                .retrieve()
+                .bodyToMono(List.class);
+    }
+
+    /**
+     * 销毁会话
+     */
+    public Mono<Void> destroySession(String sessionId) {
+        return webClient.delete()
+                .uri("/api/sessions/{sessionId}", sessionId)
+                .retrieve()
+                .bodyToMono(Void.class);
+    }
+
+    /**
+     * 获取 Gateway 状态
+     */
+    public Mono<Map> getStatus() {
+        return webClient.get()
+                .uri("/api/status")
+                .retrieve()
+                .bodyToMono(Map.class);
+    }
+
+    /**
      * 获取原始 WebClient（用于自定义请求）
      */
     public WebClient getWebClient() {

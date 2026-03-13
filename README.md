@@ -70,13 +70,34 @@ public class ChatController {
 
 参见 [examples/demo](examples/demo) 目录。
 
-## 开发计划
+## 项目结构
 
-- [ ] 基础 Gateway REST API 客户端
+```
+src/main/java/com/openclaw/spring/
+├── autoconfigure/
+│   └── OpenClawAutoConfiguration.java   # 自动配置
+├── client/
+│   └── OpenClawClient.java              # Gateway 客户端
+├── model/
+│   ├── OpenClawMessage.java             # 消息模型
+│   ├── Session.java                     # 会话模型
+│   └── SkillInfo.java                   # 技能信息模型
+└── properties/
+    └── OpenClawProperties.java          # 配置属性
+```
+
+## 开发进度
+
+- [x] 基础 Gateway REST API 客户端
+- [x] 消息/会话/Skill 数据模型
 - [ ] Skill 开发框架
 - [ ] 事件监听机制
 - [ ] 多通道消息适配器
 - [ ] Spring AI 集成
+
+## 开发文档
+
+详见 [DEVELOPMENT.md](DEVELOPMENT.md)
 
 ## License
 

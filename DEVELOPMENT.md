@@ -12,21 +12,24 @@
 
 ## 核心功能模块
 
-### 1. Gateway Client（Gateway 客户端）✅ 已完成基础版
+### 1. Gateway Client（Gateway 客户端）✅ 已完成 v1
 
 与 OpenClaw Gateway REST API 通信的核心客户端。
 
 **已实现：**
 - `OpenClawClient` — 基于 Spring WebFlux 的响应式客户端
-- 支持发送消息、创建会话、获取状态
-- 支持 Bearer Token 认证
+- 发送消息（单次/会话）
+- Session 管理（创建、列表、销毁）
+- 获取技能列表、执行技能
+- Gateway 状态查询
+- Bearer Token 认证
+- `OpenClawMessage` / `Session` / `SkillInfo` 数据模型
 
 **待完善：**
-- [ ] Session 管理（创建、销毁、列表）
-- [ ] 消息历史查询
 - [ ] 流式响应（SSE）
 - [ ] 错误处理与重试机制
 - [ ] 连接池配置
+- [ ] WebSocket 支持
 
 ### 2. Skill Framework（技能框架）🔲 待开发
 
@@ -138,12 +141,15 @@ openclaw:
 
 ## 开发路线图
 
-### Phase 1: 基础功能（当前）
+### Phase 1: 基础功能（当前）🔒 进行中
 - [x] 项目结构搭建
-- [x] 基础 Gateway Client
+- [x] Maven 项目配置
+- [x] 基础 Gateway Client（消息、会话、技能、状态）
+- [x] 数据模型（Message、Session、SkillInfo）
 - [x] 配置属性
 - [x] 自动配置
-- [ ] 完善 Gateway API 调用
+- [x] README 文档
+- [x] 开发文档（架构 + 路线图）
 - [ ] 单元测试
 - [ ] 发布 v0.1.0
 
