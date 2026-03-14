@@ -4,9 +4,12 @@ import com.openclaw.spring.event.EventListenerRegistry;
 import com.openclaw.spring.mcp.McpToolAdapter;
 import com.openclaw.spring.skill.OpenClawSkill;
 import com.openclaw.spring.skill.SkillRegistry;
+import com.openclaw.spring.web.SkillController;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -37,6 +40,17 @@ public class SkillAutoConfiguration {
                                          ApplicationContext applicationContext,
                                          @ConditionalOnBean(EventListenerRegistry.class) EventListenerRegistry eventListenerRegistry) {
         return new SkillRegistrar(skillRegistry, applicationContext, eventListenerRegistry);
+    }
+
+    /**
+     * REST API 控制器（仅 Web 应用生效）
+     */
+    @Bean
+    @ConditionalOnWebApplication
+    @ConditionalOnClass(name = "org.springframework.web.bind.annotation.RestController")
+    @ConditionalOnMissingBean
+    public SkillController skillController(SkillRegistry skillRegistry) {
+        return new SkillController(skillRegistry);
     }
 
     /**

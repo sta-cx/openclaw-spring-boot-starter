@@ -21,4 +21,7 @@ public @interface SkillAction {
 
     /** 动作描述 */
     String description() default "";
+
+    /** JSON Schema 定义（用于参数验证） */
+    String schema() default "";
 }

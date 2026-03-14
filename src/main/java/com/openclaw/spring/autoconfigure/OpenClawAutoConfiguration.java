@@ -1,7 +1,9 @@
 package com.openclaw.spring.autoconfigure;
 
+import com.openclaw.spring.actuator.OpenClawHealthIndicator;
 import com.openclaw.spring.client.OpenClawClient;
 import com.openclaw.spring.properties.OpenClawProperties;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,5 +21,12 @@ public class OpenClawAutoConfiguration {
     @ConditionalOnMissingBean
     public OpenClawClient openClawClient(OpenClawProperties properties) {
         return new OpenClawClient(properties);
+    }
+
+    @Bean
+    @ConditionalOnClass(HealthIndicator.class)
+    @ConditionalOnMissingBean(name = "openClawHealthIndicator")
+    public OpenClawHealthIndicator openClawHealthIndicator(OpenClawClient client) {
+        return new OpenClawHealthIndicator(client);
     }
 }
