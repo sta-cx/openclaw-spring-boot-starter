@@ -1,1 +1,3 @@
 com.openclaw.spring.autoconfigure.OpenClawAutoConfiguration
+com.openclaw.spring.autoconfigure.SkillAutoConfiguration
+com.openclaw.spring.autoconfigure.EventAutoConfiguration
