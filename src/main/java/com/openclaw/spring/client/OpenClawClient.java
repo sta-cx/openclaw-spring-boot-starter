@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * OpenClaw Gateway 通信错误
  */
-class GatewayException extends RuntimeException {
+public class GatewayException extends RuntimeException {
     private final int statusCode;
 
     GatewayException(int statusCode, String message) {
@@ -79,6 +79,7 @@ public class OpenClawClient {
     /**
      * 创建新会话
      */
+    @SuppressWarnings("rawtypes")
     public Mono<Map> createSession() {
         return webClient.post()
                 .uri("/api/sessions")
@@ -89,6 +90,7 @@ public class OpenClawClient {
     /**
      * 列出已安装的技能
      */
+    @SuppressWarnings("rawtypes")
     public Mono<List> listSkills() {
         return webClient.get()
                 .uri("/api/skills")
@@ -110,6 +112,7 @@ public class OpenClawClient {
     /**
      * 获取 Gateway 状态
      */
+    @SuppressWarnings("rawtypes")
     public Mono<Map> getStatus() {
         return webClient.get()
                 .uri("/api/status")
@@ -120,6 +123,7 @@ public class OpenClawClient {
     /**
      * 列出活跃会话
      */
+    @SuppressWarnings("rawtypes")
     public Mono<List> listSessions(int limit) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
