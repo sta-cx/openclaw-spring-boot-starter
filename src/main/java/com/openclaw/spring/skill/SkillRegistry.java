@@ -32,8 +32,35 @@ public class SkillRegistry {
             }
         }
 
-        skills.put(skillName, new RegisteredSkill(skillName, annotation.description(), 
+        skills.put(skillName, new RegisteredSkill(skillName, annotation.description(),
                                                    annotation.version(), skillInstance, actions));
+    }
+
+    /**
+     * 注销一个 Skill
+     *
+     * @param skillName 要注销的 Skill 名称
+     * @return 被注销的 Skill，如果不存在返回 null
+     */
+    public RegisteredSkill unregister(String skillName) {
+        return skills.remove(skillName);
+    }
+
+    /**
+     * 检查是否可以注销 Skill（根据实例匹配）
+     *
+     * @param skillInstance Skill 实例
+     * @return 被注销的 Skill，如果实例不匹配返回 null
+     */
+    public RegisteredSkill unregisterByInstance(Object skillInstance) {
+        String nameToRemove = null;
+        for (var entry : skills.entrySet()) {
+            if (entry.getValue().getInstance() == skillInstance) {
+                nameToRemove = entry.getKey();
+                break;
+            }
+        }
+        return nameToRemove != null ? skills.remove(nameToRemove) : null;
     }
 
     /**

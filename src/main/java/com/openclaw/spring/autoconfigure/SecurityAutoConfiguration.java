@@ -2,6 +2,7 @@ package com.openclaw.spring.autoconfigure;
 
 import com.openclaw.spring.properties.OpenClawProperties;
 import com.openclaw.spring.security.ApiKeyAuthenticationFilter;
+import com.openclaw.spring.security.RateLimitFilter;
 import jakarta.servlet.Filter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -14,13 +15,11 @@ import org.springframework.context.annotation.Bean;
 /**
  * 安全自动配置
  *
- * 当满足以下条件时启用 API Key 认证：
- * - Web 应用环境
- * - classpath 中存在 jakarta.servlet.Filter
- * - openclaw.security.enabled=true
- * - openclaw.security.api-keys 已配置且非空
+ * 提供两个独立的安全过滤器：
+ * 1. API Key 认证（openclaw.security.enabled=true）
+ * 2. Rate Limiting（openclaw.security.rate-limit.enabled=true）
  *
- * 如果未启用，过滤器不注册，所有端点保持开放（向后兼容）。
+ * 两个过滤器可独立启用，互不依赖。
  */
 @AutoConfiguration
 @ConditionalOnWebApplication
@@ -34,14 +33,36 @@ public class SecurityAutoConfiguration {
             OpenClawProperties properties) {
 
         OpenClawProperties.Security security = properties.getSecurity();
-
         ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter(security);
 
         FilterRegistrationBean<ApiKeyAuthenticationFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(filter);
         registration.addUrlPatterns(security.getProtectedPath() + "/*");
-        registration.setOrder(100); // Low priority number = higher precedence
+        registration.setOrder(100);
         registration.setName("openclawApiKeyFilter");
+
+        return registration;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "rateLimitFilterRegistration")
+    @ConditionalOnProperty(prefix = "openclaw.security.rate-limit", name = "enabled", havingValue = "true")
+    public FilterRegistrationBean<RateLimitFilter> rateLimitFilterRegistration(
+            OpenClawProperties properties) {
+
+        OpenClawProperties.Security security = properties.getSecurity();
+        OpenClawProperties.Security.RateLimit rateLimit = security.getRateLimit();
+
+        RateLimitFilter filter = new RateLimitFilter(
+                rateLimit.getRequestsPerMinute(),
+                security.getProtectedPath()
+        );
+
+        FilterRegistrationBean<RateLimitFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(filter);
+        registration.addUrlPatterns(security.getProtectedPath() + "/*");
+        registration.setOrder(90); // Runs before API Key filter
+        registration.setName("openclawRateLimitFilter");
 
         return registration;
     }

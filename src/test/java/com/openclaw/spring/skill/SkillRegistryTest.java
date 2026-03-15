@@ -91,7 +91,51 @@ class SkillRegistryTest {
     @Test
     void testUnannotatedClassThrows() {
         SkillRegistry registry = new SkillRegistry();
-        assertThrows(IllegalArgumentException.class, () -> 
+        assertThrows(IllegalArgumentException.class, () ->
             registry.register(new Object()));
+    }
+
+    @Test
+    void testUnregisterSkill() {
+        SkillRegistry registry = new SkillRegistry();
+        registry.register(new TestSkill());
+        assertTrue(registry.hasSkill("test-skill"));
+
+        SkillRegistry.RegisteredSkill removed = registry.unregister("test-skill");
+        assertNotNull(removed);
+        assertEquals("test-skill", removed.getName());
+        assertFalse(registry.hasSkill("test-skill"));
+    }
+
+    @Test
+    void testUnregisterNonExistent() {
+        SkillRegistry registry = new SkillRegistry();
+        SkillRegistry.RegisteredSkill removed = registry.unregister("nonexistent");
+        assertNull(removed);
+    }
+
+    @Test
+    void testUnregisterByInstance() {
+        SkillRegistry registry = new SkillRegistry();
+        TestSkill skill = new TestSkill();
+        registry.register(skill);
+        assertTrue(registry.hasSkill("test-skill"));
+
+        SkillRegistry.RegisteredSkill removed = registry.unregisterByInstance(skill);
+        assertNotNull(removed);
+        assertFalse(registry.hasSkill("test-skill"));
+    }
+
+    @Test
+    void testUnregisterByWrongInstance() {
+        SkillRegistry registry = new SkillRegistry();
+        TestSkill skill1 = new TestSkill();
+        TestSkill skill2 = new TestSkill();
+        registry.register(skill1);
+
+        // Trying to unregister with a different instance
+        SkillRegistry.RegisteredSkill removed = registry.unregisterByInstance(skill2);
+        assertNull(removed);
+        assertTrue(registry.hasSkill("test-skill")); // Still registered
     }
 }

@@ -173,8 +173,10 @@ public class SkillPluginLoader {
 
         // 从注册表移除 Skill
         for (String skillName : plugin.skillNames) {
-            log.info("  Unregistering skill: {}", skillName);
-            // Note: SkillRegistry would need an unregister method for full support
+            var removed = skillRegistry.unregister(skillName);
+            if (removed != null) {
+                log.info("  Unregistered skill: {}", skillName);
+            }
         }
 
         // 关闭 ClassLoader

@@ -77,6 +77,7 @@ public class OpenClawProperties {
         private boolean enabled = false;
         private List<String> apiKeys = List.of();
         private String protectedPath = "/api/openclaw";
+        private RateLimit rateLimit = new RateLimit();
 
         public boolean isEnabled() { return enabled; }
         public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -84,6 +85,18 @@ public class OpenClawProperties {
         public void setApiKeys(List<String> apiKeys) { this.apiKeys = apiKeys; }
         public String getProtectedPath() { return protectedPath; }
         public void setProtectedPath(String protectedPath) { this.protectedPath = protectedPath; }
+        public RateLimit getRateLimit() { return rateLimit; }
+        public void setRateLimit(RateLimit rateLimit) { this.rateLimit = rateLimit; }
+
+        public static class RateLimit {
+            private boolean enabled = false;
+            private int requestsPerMinute = 60;
+
+            public boolean isEnabled() { return enabled; }
+            public void setEnabled(boolean enabled) { this.enabled = enabled; }
+            public int getRequestsPerMinute() { return requestsPerMinute; }
+            public void setRequestsPerMinute(int requestsPerMinute) { this.requestsPerMinute = requestsPerMinute; }
+        }
     }
 
     public static class Plugin {
