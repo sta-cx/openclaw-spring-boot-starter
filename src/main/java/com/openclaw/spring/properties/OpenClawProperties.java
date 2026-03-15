@@ -2,11 +2,14 @@ package com.openclaw.spring.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @ConfigurationProperties(prefix = "openclaw")
 public class OpenClawProperties {
 
     private Gateway gateway = new Gateway();
     private WebSocket websocket = new WebSocket();
+    private Security security = new Security();
 
     public Gateway getGateway() {
         return gateway;
@@ -22,6 +25,14 @@ public class OpenClawProperties {
 
     public void setWebsocket(WebSocket websocket) {
         this.websocket = websocket;
+    }
+
+    public Security getSecurity() {
+        return security;
+    }
+
+    public void setSecurity(Security security) {
+        this.security = security;
     }
 
     public static class Gateway {
@@ -51,5 +62,18 @@ public class OpenClawProperties {
         public void setReconnectInterval(int reconnectInterval) { this.reconnectInterval = reconnectInterval; }
         public int getMaxReconnectAttempts() { return maxReconnectAttempts; }
         public void setMaxReconnectAttempts(int maxReconnectAttempts) { this.maxReconnectAttempts = maxReconnectAttempts; }
+    }
+
+    public static class Security {
+        private boolean enabled = false;
+        private List<String> apiKeys = List.of();
+        private String protectedPath = "/api/openclaw";
+
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public List<String> getApiKeys() { return apiKeys; }
+        public void setApiKeys(List<String> apiKeys) { this.apiKeys = apiKeys; }
+        public String getProtectedPath() { return protectedPath; }
+        public void setProtectedPath(String protectedPath) { this.protectedPath = protectedPath; }
     }
 }

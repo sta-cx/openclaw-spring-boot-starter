@@ -3,3 +3,4 @@ com.openclaw.spring.autoconfigure.OpenClawAutoConfiguration
 com.openclaw.spring.autoconfigure.SkillAutoConfiguration
 com.openclaw.spring.autoconfigure.WebSocketAutoConfiguration
 com.openclaw.spring.autoconfigure.MetricsAutoConfiguration
+com.openclaw.spring.autoconfigure.SecurityAutoConfiguration
