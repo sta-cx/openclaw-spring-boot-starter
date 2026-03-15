@@ -1,12 +1,14 @@
 package com.openclaw.spring.autoconfigure;
 
 import com.openclaw.spring.event.EventListenerRegistry;
+import com.openclaw.spring.event.EventPublisher;
 import com.openclaw.spring.mcp.McpToolAdapter;
 import com.openclaw.spring.skill.OpenClawSkill;
 import com.openclaw.spring.skill.SkillRegistry;
 import com.openclaw.spring.web.SkillController;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -20,7 +22,8 @@ import java.util.Map;
  * Skill 自动配置 - 自动发现并注册所有 @OpenClawSkill Bean
  * 同时注册 Skill 中的 @OpenClawEventListener 方法
  */
-@AutoConfiguration
+@AutoConfiguration(after = {EventAutoConfiguration.class})
+@AutoConfigureAfter(EventAutoConfiguration.class)
 public class SkillAutoConfiguration {
 
     @Bean
@@ -36,9 +39,9 @@ public class SkillAutoConfiguration {
     }
 
     @Bean
-    public SkillRegistrar skillRegistrar(SkillRegistry skillRegistry, 
+    public SkillRegistrar skillRegistrar(SkillRegistry skillRegistry,
                                          ApplicationContext applicationContext,
-                                         @ConditionalOnBean(EventListenerRegistry.class) EventListenerRegistry eventListenerRegistry) {
+                                         ObjectProvider<EventListenerRegistry> eventListenerRegistry) {
         return new SkillRegistrar(skillRegistry, applicationContext, eventListenerRegistry);
     }
 
@@ -60,22 +63,23 @@ public class SkillAutoConfiguration {
     public static class SkillRegistrar {
         private final SkillRegistry skillRegistry;
         private final ApplicationContext applicationContext;
-        private final EventListenerRegistry eventListenerRegistry;
+        private final ObjectProvider<EventListenerRegistry> eventListenerRegistryProvider;
 
-        public SkillRegistrar(SkillRegistry skillRegistry, 
+        public SkillRegistrar(SkillRegistry skillRegistry,
                               ApplicationContext applicationContext,
-                              EventListenerRegistry eventListenerRegistry) {
+                              ObjectProvider<EventListenerRegistry> eventListenerRegistryProvider) {
             this.skillRegistry = skillRegistry;
             this.applicationContext = applicationContext;
-            this.eventListenerRegistry = eventListenerRegistry;
+            this.eventListenerRegistryProvider = eventListenerRegistryProvider;
         }
 
         @PostConstruct
         public void registerSkills() {
             Map<String, Object> skillBeans = applicationContext.getBeansWithAnnotation(OpenClawSkill.class);
+            EventListenerRegistry eventListenerRegistry = eventListenerRegistryProvider.getIfAvailable();
             for (Object skillBean : skillBeans.values()) {
                 skillRegistry.register(skillBean);
-                // 同时注册事件监听器
+                // 同时注册事件监听器（如果事件系统可用）
                 if (eventListenerRegistry != null) {
                     eventListenerRegistry.registerListeners(skillBean);
                 }
