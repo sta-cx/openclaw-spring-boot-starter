@@ -78,10 +78,20 @@ public class SkillAutoConfiguration {
             Map<String, Object> skillBeans = applicationContext.getBeansWithAnnotation(OpenClawSkill.class);
             EventListenerRegistry eventListenerRegistry = eventListenerRegistryProvider.getIfAvailable();
             for (Object skillBean : skillBeans.values()) {
+                OpenClawSkill annotation = skillBean.getClass().getAnnotation(OpenClawSkill.class);
                 skillRegistry.register(skillBean);
+
                 // 同时注册事件监听器（如果事件系统可用）
                 if (eventListenerRegistry != null) {
                     eventListenerRegistry.registerListeners(skillBean);
+                    // 发布 Skill 注册事件
+                    eventListenerRegistry.publish(new com.openclaw.spring.event.OpenClawEvent(
+                            com.openclaw.spring.event.EventTypes.SKILL_REGISTERED,
+                            skillBean,
+                            Map.of("name", annotation.name(),
+                                   "version", annotation.version(),
+                                   "description", annotation.description())
+                    ));
                 }
             }
         }
