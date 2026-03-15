@@ -37,6 +37,15 @@ public final class EventTypes {
     /** Gateway 连接断开 */
     public static final String GATEWAY_DISCONNECTED = "gateway.disconnected";
 
+    /** Gateway 重连中 */
+    public static final String GATEWAY_RECONNECT = "gateway.reconnect";
+
+    /** WebSocket 消息收到 */
+    public static final String WEBSOCKET_MESSAGE_RECEIVED = "websocket.message.received";
+
+    /** WebSocket 连接错误 */
+    public static final String WEBSOCKET_ERROR = "websocket.error";
+
     /** 通配符 — 监听所有事件 */
     public static final String ALL = "*";
 }

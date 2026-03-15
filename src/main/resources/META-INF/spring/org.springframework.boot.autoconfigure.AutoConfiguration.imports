@@ -1,3 +1,5 @@
+com.openclaw.spring.autoconfigure.EventAutoConfiguration
 com.openclaw.spring.autoconfigure.OpenClawAutoConfiguration
 com.openclaw.spring.autoconfigure.SkillAutoConfiguration
-com.openclaw.spring.autoconfigure.EventAutoConfiguration
+com.openclaw.spring.autoconfigure.WebSocketAutoConfiguration
+com.openclaw.spring.autoconfigure.MetricsAutoConfiguration
