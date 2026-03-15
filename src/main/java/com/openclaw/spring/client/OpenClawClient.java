@@ -10,6 +10,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * OpenClaw Gateway 通信错误
+ */
+class GatewayException extends RuntimeException {
+    private final int statusCode;
+
+    GatewayException(int statusCode, String message) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
+    public int getStatusCode() { return statusCode; }
+}
+
+/**
  * OpenClaw Gateway REST API Client
  * 
  * 提供与 OpenClaw Gateway 交互的核心方法
@@ -42,6 +56,12 @@ public class OpenClawClient {
                 .uri("/api/chat")
                 .bodyValue(Map.of("message", message))
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError(),
+                        response -> Mono.error(new GatewayException(
+                                response.rawStatusCode(), "Client error: " + response.statusCode())))
+                .onStatus(status -> status.is5xxServerError(),
+                        response -> Mono.error(new GatewayException(
+                                response.rawStatusCode(), "Gateway server error: " + response.statusCode())))
                 .bodyToMono(String.class);
     }
 

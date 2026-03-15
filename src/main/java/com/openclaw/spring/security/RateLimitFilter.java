@@ -11,7 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -46,10 +46,21 @@ public class RateLimitFilter extends OncePerRequestFilter {
     // IP → (窗口开始时间, 请求计数)
     private final ConcurrentHashMap<String, WindowCounter> counters = new ConcurrentHashMap<>();
 
+    // 定时清理过期计数器
+    private final ScheduledExecutorService cleanupExecutor;
+
     public RateLimitFilter(int requestsPerMinute, String protectedPath) {
         this.maxRequests = requestsPerMinute;
         this.windowMillis = 60_000; // 1 minute
         this.protectedPath = protectedPath;
+
+        // 每 5 分钟清理一次过期计数器
+        this.cleanupExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "openclaw-ratelimit-cleanup");
+            t.setDaemon(true);
+            return t;
+        });
+        this.cleanupExecutor.scheduleAtFixedRate(this::cleanup, 5, 5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -151,7 +162,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         WindowCounter(long windowStart) {
             this.windowStart = new AtomicLong(windowStart);
-            this.count = new AtomicInteger(1);
+            this.count = new AtomicInteger(0);
         }
     }
 }

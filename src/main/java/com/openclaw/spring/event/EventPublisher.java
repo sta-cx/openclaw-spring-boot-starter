@@ -1,9 +1,23 @@
 package com.openclaw.spring.event;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * 事件发布器接口
  */
 public interface EventPublisher {
+
+    /** 共享线程池用于异步发布 */
+    Executor ASYNC_EXECUTOR = Executors.newFixedThreadPool(
+            Math.max(2, Runtime.getRuntime().availableProcessors() / 2),
+            r -> {
+                Thread t = new Thread(r, "openclaw-event-async");
+                t.setDaemon(true);
+                return t;
+            }
+    );
 
     /**
      * 发布事件（同步）
@@ -21,7 +35,7 @@ public interface EventPublisher {
      * 异步发布事件
      */
     default void publishAsync(OpenClawEvent event) {
-        new Thread(() -> publish(event)).start();
+        CompletableFuture.runAsync(() -> publish(event), ASYNC_EXECUTOR);
     }
 
     /**

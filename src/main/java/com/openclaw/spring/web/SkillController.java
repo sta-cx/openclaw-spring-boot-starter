@@ -144,13 +144,15 @@ public class SkillController {
             response.put("action", actionName);
             response.put("result", result);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            // 业务异常：返回具体信息
             response.put("error", "EXECUTION_FAILED");
             response.put("message", e.getMessage());
-            Throwable cause = e.getCause();
-            if (cause != null) {
-                response.put("cause", cause.getMessage());
-            }
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            // 内部异常：不暴露详情
+            response.put("error", "INTERNAL_ERROR");
+            response.put("message", "Skill execution failed");
             return ResponseEntity.status(500).body(response);
         }
     }

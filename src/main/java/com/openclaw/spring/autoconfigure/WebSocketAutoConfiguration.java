@@ -15,10 +15,11 @@ import org.springframework.context.annotation.Bean;
  * 当满足以下条件时自动启用：
  * - classpath 中存在 WebSocketClient
  * - openclaw.websocket.enabled=true（默认）
- * - openclaw.gateway.url 已配置
+ * - openclaw.gateway.url 已配置（必须）
  */
 @AutoConfiguration(after = {EventAutoConfiguration.class, OpenClawAutoConfiguration.class})
 @ConditionalOnClass(name = "org.springframework.web.reactive.socket.client.WebSocketClient")
+@ConditionalOnProperty(prefix = "openclaw.gateway", name = "url")
 public class WebSocketAutoConfiguration {
 
     @Bean

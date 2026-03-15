@@ -101,15 +101,37 @@ public class SkillRegistry {
         Method method = action.getMethod();
         method.setAccessible(true);
 
-        // 简单参数映射
+        if (params == null) {
+            params = Map.of();
+        }
+
         Class<?>[] paramTypes = method.getParameterTypes();
+        java.lang.reflect.Parameter[] parameters = method.getParameters();
+
         if (paramTypes.length == 0) {
+            // 无参方法
             return method.invoke(skill.getInstance());
-        } else if (paramTypes.length == 1 && params != null && !params.isEmpty()) {
-            Object firstValue = params.values().iterator().next();
-            return method.invoke(skill.getInstance(), firstValue);
+        } else if (paramTypes.length == 1) {
+            // 单参数：优先按 @SkillParam name 映射，fallback 到第一个 value
+            SkillParam skillParam = parameters[0].getAnnotation(SkillParam.class);
+            Object value;
+            if (skillParam != null && params.containsKey(skillParam.value())) {
+                value = params.get(skillParam.value());
+            } else if (!params.isEmpty()) {
+                value = params.values().iterator().next();
+            } else {
+                value = null;
+            }
+            return method.invoke(skill.getInstance(), value);
         } else {
-            return method.invoke(skill.getInstance(), params);
+            // 多参数：按 @SkillParam name 映射
+            Object[] args = new Object[paramTypes.length];
+            for (int i = 0; i < parameters.length; i++) {
+                SkillParam skillParam = parameters[i].getAnnotation(SkillParam.class);
+                String paramName = skillParam != null ? skillParam.value() : parameters[i].getName();
+                args[i] = params.get(paramName);
+            }
+            return method.invoke(skill.getInstance(), args);
         }
     }
 

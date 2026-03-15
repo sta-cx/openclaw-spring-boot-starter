@@ -11,8 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 
-import jakarta.annotation.PreDestroy;
-
 /**
  * Skill 插件自动配置
  *
